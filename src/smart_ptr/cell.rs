@@ -24,14 +24,14 @@ impl<T> MyCell<T> {
     where
         T: Copy,
     {
-        // Since no operation exposes any type of reference of "value", it is safe to directly
-        // return a copy.
+        // SAFETY: Since no operation exposes any type of reference of "value", it is safe to
+        // directly return a copy.
         unsafe { *self.value.get() }
     }
 
     pub fn set(&self, value: T) {
-        // "value" field is of type UnsafeCell<T>, which does not implement Sync, so instances of
-        // MyCell cannot be shared across multiple threads.
+        // SAFETY: "value" field is of type UnsafeCell<T>, which does not implement Sync, so
+        // instances of MyCell cannot be shared across multiple threads.
         unsafe { *self.value.get() = value };
     }
 }
@@ -47,4 +47,13 @@ mod cell_test {
         let y = x.get();
         assert_eq!(y, 1);
     }
+
+    // Won't work: because String does not implement Copy.
+    // #[test]
+    // fn cell_test_2() {
+    //     let x = MyCell::new(String::from("hello"));
+    //     x.set(String::from("world"));
+    //     let y = x.get();
+    //     assert_eq!(y, String::from("world"));
+    // }
 }
