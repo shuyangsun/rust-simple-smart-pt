@@ -126,3 +126,18 @@ impl<'refcell, T> MyRefMut<'refcell, T> {
         unsafe { &mut *self.refcell.value.get() }
     }
 }
+
+#[cfg(test)]
+mod refcell_test {
+    use super::MyRefCell;
+
+    #[test]
+    fn test_refcell_1() {
+        let string = MyRefCell::new(String::from("hello"));
+        {
+            assert_eq!("hello", string.borrow().unwrap().as_ref().as_str());
+        }
+        string.borrow_mut().unwrap().as_ref_mut().remove(0);
+        assert_eq!("ello", string.borrow().unwrap().as_ref().as_str());
+    }
+}
