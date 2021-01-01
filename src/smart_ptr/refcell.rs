@@ -14,11 +14,11 @@ pub enum ReferenceState {
 ///
 /// let v = MyRefCell::new(vec![0, 1, 2]);
 /// {
-///     let v_ref = v.borrow().unwrap();
+///     let v_ref = v.borrow();
 ///     println!("v.len() = {}", v_ref.len());
 /// }
-/// v.borrow_mut().unwrap().push(3);
-/// let v_ref_2 = v.borrow().unwrap();
+/// v.borrow_mut().push(3);
+/// let v_ref_2 = v.borrow();
 /// println!("v.len() = {}", v_ref_2.len());
 /// ```
 pub struct MyRefCell<T> {
@@ -34,27 +34,29 @@ impl<T> MyRefCell<T> {
         }
     }
 
-    pub fn borrow(&self) -> Option<MyRef<'_, T>> {
+    pub fn borrow(&self) -> MyRef<'_, T> {
         match self.rc.get() {
-            ReferenceState::Exclusive => None,
+            ReferenceState::Exclusive => {
+                panic!("Cannot borrow variable owned exclusively elsewhere.")
+            }
             ReferenceState::Unshared => {
                 self.rc.set(ReferenceState::Shared(1));
-                Some(MyRef::new(&self))
+                MyRef::new(&self)
             }
             ReferenceState::Shared(count) => {
                 self.rc.set(ReferenceState::Shared(count + 1));
-                Some(MyRef::new(&self))
+                MyRef::new(&self)
             }
         }
     }
 
-    pub fn borrow_mut(&self) -> Option<MyRefMut<'_, T>> {
+    pub fn borrow_mut(&self) -> MyRefMut<'_, T> {
         match self.rc.get() {
             ReferenceState::Unshared => {
                 self.rc.set(ReferenceState::Exclusive);
-                Some(MyRefMut::new(&self))
+                MyRefMut::new(&self)
             }
-            _ => None,
+            _ => panic!("Cannot borrow variable shared elsewhere as mutable reference."),
         }
     }
 }
@@ -155,10 +157,10 @@ mod refcell_test {
     fn test_refcell_1() {
         let string = MyRefCell::new(String::from("hello"));
         {
-            assert_eq!("hello", string.borrow().unwrap().as_ref().as_str());
+            assert_eq!("hello", string.borrow().as_ref().as_str());
         }
-        string.borrow_mut().unwrap().as_ref_mut().remove(0);
-        assert_eq!("ello", string.borrow().unwrap().as_ref().as_str());
+        string.borrow_mut().as_ref_mut().remove(0);
+        assert_eq!("ello", string.borrow().as_ref().as_str());
     }
 
     #[test]
@@ -166,9 +168,9 @@ mod refcell_test {
         let mut raw_string = String::from("hello");
         let string = MyRefCell::new(&mut raw_string);
         {
-            assert_eq!("hello", string.borrow().unwrap().as_str());
+            assert_eq!("hello", string.borrow().as_str());
         }
-        string.borrow_mut().unwrap().remove(0);
-        assert_eq!("ello", string.borrow().unwrap().as_str());
+        string.borrow_mut().remove(0);
+        assert_eq!("ello", string.borrow().as_str());
     }
 }
