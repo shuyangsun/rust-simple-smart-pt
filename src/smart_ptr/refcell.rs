@@ -105,6 +105,28 @@ impl<T> Drop for MyRefMut<'_, T> {
     }
 }
 
+impl<T> std::ops::Deref for MyRef<'_, T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.as_ref()
+    }
+}
+
+impl<T> std::ops::Deref for MyRefMut<'_, T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.refcell.value.get() }
+    }
+}
+
+impl<T> std::ops::DerefMut for MyRefMut<'_, T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.as_ref_mut()
+    }
+}
+
 impl<'refcell, T> MyRef<'refcell, T> {
     pub fn new(cell: &'refcell MyRefCell<T>) -> Self {
         println!("Initializing MyRef");
