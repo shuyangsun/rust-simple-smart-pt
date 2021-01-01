@@ -15,12 +15,12 @@ pub enum ReferenceState {
 /// let v = MyRefCell::new(vec![0, 1, 2]);
 /// {
 ///     let v_ref = v.borrow().unwrap();
-///     println!("v.len() = {}", v_ref.as_ref().len());
+///     println!("v.len() = {}", v_ref.len());
 /// }
-/// v.borrow_mut().unwrap().as_ref_mut().push(3);
+/// v.borrow_mut().unwrap().push(3);
 /// {
 ///     let v_ref_2 = v.borrow().unwrap();
-///     println!("v.len() = {}", v_ref_2.as_ref().len());
+///     println!("v.len() = {}", v_ref_2.len());
 /// }
 /// ```
 pub struct MyRefCell<T> {
