@@ -162,4 +162,15 @@ mod refcell_test {
         string.borrow_mut().unwrap().as_ref_mut().remove(0);
         assert_eq!("ello", string.borrow().unwrap().as_ref().as_str());
     }
+
+    #[test]
+    fn test_refcell_2() {
+        let mut raw_string = String::from("hello");
+        let string = MyRefCell::new(&mut raw_string);
+        {
+            assert_eq!("hello", string.borrow().unwrap().as_str());
+        }
+        string.borrow_mut().unwrap().remove(0);
+        assert_eq!("ello", string.borrow().unwrap().as_str());
+    }
 }
