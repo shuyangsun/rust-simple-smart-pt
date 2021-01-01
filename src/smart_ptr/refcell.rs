@@ -18,10 +18,8 @@ pub enum ReferenceState {
 ///     println!("v.len() = {}", v_ref.len());
 /// }
 /// v.borrow_mut().unwrap().push(3);
-/// {
-///     let v_ref_2 = v.borrow().unwrap();
-///     println!("v.len() = {}", v_ref_2.len());
-/// }
+/// let v_ref_2 = v.borrow().unwrap();
+/// println!("v.len() = {}", v_ref_2.len());
 /// ```
 pub struct MyRefCell<T> {
     value: UnsafeCell<T>,
