@@ -37,6 +37,11 @@ impl<T> MyRefCell<T> {
     pub fn borrow(&self) -> MyRef<'_, T> {
         match self.rc.get() {
             ReferenceState::Exclusive => {
+                // Alternative solutions to panic would be returning Result or Option, however an
+                // incorrect borrow is not something the programmer will like be able to recover
+                // from. The only solution to "recover" from incorrect borrow behavior would be
+                // fixing it in the code, which means making it correct during compile-time. So
+                // panic is the best solution here.
                 panic!("Cannot borrow variable owned exclusively elsewhere.")
             }
             ReferenceState::Unshared => {
