@@ -78,7 +78,9 @@ impl<T> Drop for MyRef<'_, T> {
     fn drop(&mut self) {
         println!("Dropping MyRef");
         match self.refcell.rc.get() {
-            ReferenceState::Exclusive => self.refcell.rc.set(ReferenceState::Unshared),
+            ReferenceState::Exclusive => {
+                panic!("Cannot drop reference when there is an exclusive reference.")
+            }
             ReferenceState::Unshared => panic!("Cannot drop unshared reference."),
             ReferenceState::Shared(count) => {
                 let new_count = count - 1;
@@ -98,14 +100,7 @@ impl<T> Drop for MyRefMut<'_, T> {
         match self.refcell.rc.get() {
             ReferenceState::Exclusive => self.refcell.rc.set(ReferenceState::Unshared),
             ReferenceState::Unshared => panic!("Cannot drop unshared reference."),
-            ReferenceState::Shared(count) => {
-                let new_count = count - 1;
-                self.refcell.rc.set(if new_count <= 0 {
-                    ReferenceState::Unshared
-                } else {
-                    ReferenceState::Shared(new_count)
-                })
-            }
+            ReferenceState::Shared(_) => panic!("Cannot drop reference when shared."),
         }
     }
 }
