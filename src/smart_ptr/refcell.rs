@@ -9,6 +9,7 @@ pub enum ReferenceState {
 }
 
 /// Simple implementation mimicking std::cell::RefCell.
+///
 /// ```rust
 /// use rust_simple_smart_pt::smart_ptr::refcell::MyRefCell;
 ///
