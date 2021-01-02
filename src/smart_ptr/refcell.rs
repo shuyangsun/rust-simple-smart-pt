@@ -173,4 +173,27 @@ mod refcell_test {
         string.borrow_mut().remove(0);
         assert_eq!("ello", string.borrow().as_str());
     }
+
+    #[test]
+    #[should_panic]
+    fn test_refcell_panic_1() {
+        let mut raw_string = String::from("hello");
+        let string = MyRefCell::new(&mut raw_string);
+        let mut string_ref_mut = string.borrow_mut();
+        string_ref_mut.push('!');
+        let string_ref = string.borrow();
+        eprintln!("String that should NOT be printed is \"{}\".", *string_ref);
+    }
+
+    #[test]
+    fn test_refcell_not_panic_1() {
+        let mut raw_string = String::from("hello");
+        let string = MyRefCell::new(&mut raw_string);
+        {
+            let mut string_ref_mut = string.borrow_mut();
+            string_ref_mut.push('!');
+        }
+        let string_ref = string.borrow();
+        assert_eq!("hello!", *string_ref);
+    }
 }
