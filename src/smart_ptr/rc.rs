@@ -4,7 +4,7 @@ struct MyRcRef<T> {
 }
 
 pub struct MyRc<T> {
-    inner: *const MyRcRef<T>,
+    inner: *mut MyRcRef<T>,
 }
 
 impl<T> Clone for MyRc<T> {
@@ -33,10 +33,22 @@ impl<T> Drop for MyRc<T> {
     }
 }
 
+impl<T> MyRc<T> {
+    pub fn new(value: T) -> Self {
+        let inner = MyRcRef { value, count: 1 };
+        Self {
+            inner: Box::into_raw(Box::new(inner)),
+        }
+    }
+}
+
 #[cfg(test)]
 mod rc_tests {
     use super::MyRc;
 
     #[test]
-    fn rc_test_1() {}
+    fn rc_test_1() {
+        let val = MyRc::new(5);
+        assert_eq!(*val, 5);
+    }
 }
