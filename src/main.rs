@@ -1,7 +1,9 @@
 fn main() {
-    let x = 5;
+    let x = String::from("Hello!");
     let y = &x;
 
-    assert_eq!(5, x);
-    assert_eq!(5, *y);
+    println!("x = {}", x);
+    std::thread::sleep(std::time::Duration::from_millis(1000));
+    println!("y = {}", *y);
+    drop(x);
 }
