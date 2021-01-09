@@ -63,7 +63,7 @@ mod rc_tests {
     #[test]
     fn rc_test_2() {
         let val_1 = MyRc::new(5);
-        let val_2 = val_1.clone();
+        let val_2 = MyRc::clone(&val_1);
         assert_eq!(*val_2, 5);
     }
 
@@ -80,7 +80,7 @@ mod rc_tests {
     #[should_panic]
     fn rc_test_4() {
         let mut val_1 = MyRc::new(5);
-        let val_2 = val_1.clone();
+        let val_2 = MyRc::clone(&val_1);
         MyRc::get_mut(&mut val_1).unwrap();
         assert_eq!(*val_2, 5);
     }
